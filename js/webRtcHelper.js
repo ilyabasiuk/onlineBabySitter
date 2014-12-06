@@ -1,5 +1,6 @@
 define(
     'webRtcHelper',
+    ["serverConnector"],
     function( ){
         navigator.getUserMedia =  navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
         var peerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection,
@@ -14,7 +15,7 @@ define(
             onIceCandidate = function(event) {
                 console.log(event);
             },
-            errorHandler = function(e) { alert("something went wrong"); console.error(e); };
+            errorHandler = function(e) { alert("something went wrong"); console.log(e); };
 
         return {
             captureStream: function(config, onSuccess, onError ) {
