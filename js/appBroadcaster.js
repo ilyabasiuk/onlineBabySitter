@@ -1,6 +1,12 @@
 require(["webRtcHelper"],
     function(webRtcHelper){
-       console.log("app broadcaster is here");
-       webRtcHelper.log();
+       var videoElem = document.createElement("video");
+       document.body.appendChild(videoElem);
+       videoElem.setAttribute("autoplay", "");
+       videoElem.setAttribute("muted", "");
+
+       webRtcHelper.captureStream({}, function(stream) {
+          videoElem.src = URL.createObjectURL(stream);
+       });
     }
 );
