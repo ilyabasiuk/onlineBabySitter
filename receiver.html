@@ -1,7 +1,12 @@
 <html>
   <head>
      <title> Receiver BabySitter </title>
-     <script data-main="/js/app" src="/js/require.js"></script>
+     <script>
+       var require = {
+            urlArgs: "bust=" + (new Date()).getTime()
+       };
+     </script>
+     <script data-main="/js/appReceiver" src="/js/require.js"></script>
   </head>
   <body>
       Here we will try to receive video.
