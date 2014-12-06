@@ -1,7 +1,7 @@
 define(
     'webRtcHelper',
     ["serverConnector"],
-    function( ){
+    function(con){
         navigator.getUserMedia =  navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
         var peerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection,
             iceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate,
@@ -10,14 +10,48 @@ define(
             createPc = function(stream) {
                 pc = new peerConnection(null);
                 pc.addStream(stream);
-                pc.onIceCandidate = onIceCandidate;
+                pc.onicecandidate = onIceCandidate;
             },
             onIceCandidate = function(event) {
-                console.log(event);
+               if (event.candidate) {
+                   con.send({
+                     type: 'candidate',
+                     label: event.candidate.sdpMLineIndex,
+                     id: event.candidate.sdpMid,
+                     candidate: event.candidate.candidate
+                   });
+               }              
+            },
+            createAnswer = function() {
+                pc.createAnswer(
+                  function(answer) {
+                      pc.setLocalDescription(answer, function() {
+                          // send the answer to the remote connection
+                          sendMessage(answer);
+                      });
+                  },
+                  function(error) { console.log(error) },
+                  {'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
+                );
             },
             errorHandler = function(e) { alert("something went wrong"); console.log(e); };
 
         return {
+            init: function() {
+              con.setHandler(function(message) {
+                  if (pc) {
+                      if (message.type === 'offer') {
+                         pc.setRemoteDescription(new SessionDescription(message));
+                         createAnswer();
+                      } else if (message.type === 'answer') {
+                         pc.setRemoteDescription(new SessionDescription(message));
+                      } else if (message.type === 'candidate') {
+                         var candidate = new IceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
+                         pc.addIceCandidate(candidate);
+                      }
+                  }
+              });
+            },
             captureStream: function(config, onSuccess, onError ) {
                  var defaultOptions = {
                     audio: true,
@@ -47,6 +81,7 @@ define(
                         console.log("Oh, he he got local descriptor", desc);
                         pc.setLocalDescription(desc, function() {
                             // send the offer to a server that can negotiate with a remote client
+                            con.send(desc);
                         });
                   },
                   errorHandler,
