@@ -1,0 +1,10 @@
+{
+  "name": "onlineBabySitter",
+  "description": "Signalling server",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "socket.io": "*",
+    "node-static": "*"
+  }
+}
