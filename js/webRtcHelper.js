@@ -9,8 +9,12 @@ define(
             createPc = function(stream) {
                 pc = new peerConnection(null);
                 pc.addStream(stream);
-                console.log("peer connection created",pc);
-            };
+                pc.onIceCandidate = onIceCandidate;
+            },
+            onIceCandidate = function(event) {
+                console.log(event);
+            },
+            errorHandler = function(e) { alert("something went wrong"); console.error(e); };
 
         return {
             captureStream: function(config, onSuccess, onError ) {
@@ -21,16 +25,35 @@ define(
                  },
                  options = defaultOptions,
                  callback = onSuccess? onSuccess : function() { console.log("we've got the stream")},
-                 errorCallback = onError? onError : function(e) { alert("couldn't get the stream"); console.log(e)};
+                 errorCallback = onError? onError : errorHandler;
 
                  navigator.getUserMedia(
                    { audio: options.audio, video: options.video },
                     function(stream) {
-                      callback && callback(stream);
                       options.createPc && createPc(stream);
+                      callback && callback(stream);
                     },
                     errorCallback
                  );
+            },
+            setPc: function(connection) {
+              pc = connection;
+            },
+            createOffer : function() {
+              if (pc) {
+                  pc.createOffer(
+                      function(desc) {
+                        console.log("Oh, he he got local descriptor", desc);
+                        pc.setLocalDescription(desc, function() {
+                            // send the offer to a server that can negotiate with a remote client
+                        });
+                  },
+                  errorHandler,
+                  { 'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true }}
+                );
+              } else {
+                throw new Error("PeerConnection is not defined");
+              }
             }
         };
     }

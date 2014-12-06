@@ -7,6 +7,7 @@ require(["webRtcHelper"],
 
        webRtcHelper.captureStream({}, function(stream) {
           videoElem.src = URL.createObjectURL(stream);
+          webRtcHelper.createOffer();
        });
     }
 );
