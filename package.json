@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "socket.io": "*",
-    "node-static": "*"
+    "express": "^4.10.2",
+ "socket.io": "*"
   }
 }
