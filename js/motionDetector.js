@@ -73,7 +73,7 @@ define(
 
               config.callback && (callback = config.callback);
               video = videoElem;
-              canvas = document.querySelector('canvas');
+              //canvas = document.querySelector('canvas');
               canvas.setAttribute("height", 480);
               canvas.setAttribute("width", 640);
               ctx = canvas.getContext('2d');
