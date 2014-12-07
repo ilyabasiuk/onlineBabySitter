@@ -5,6 +5,7 @@ require(["webRtcHelper"],
        videoElem.setAttribute("autoplay", "");
        videoElem.setAttribute("muted", "");
 
+       webRtcHelper.init();
        webRtcHelper.captureStream({}, function(stream) {
           videoElem.src = URL.createObjectURL(stream);
           webRtcHelper.createOffer();

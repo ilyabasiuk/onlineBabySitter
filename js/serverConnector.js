@@ -15,6 +15,7 @@ define(
           socket.emit('message', message);
         },
         setHandler : function(onMessage) {
+          console.log("set hander");
           handler = onMessage;
         }
       }

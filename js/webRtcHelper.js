@@ -9,8 +9,11 @@ define(
             pc,
             createPc = function(stream) {
                 pc = new peerConnection(null);
-                pc.addStream(stream);
+                stream && pc.addStream(stream);
                 pc.onicecandidate = onIceCandidate;
+                pc.onaddstream = function(event) {
+                    streamReceived && streamReceived(event.stream);
+                };
             },
             onIceCandidate = function(event) {
                if (event.candidate) {
@@ -20,20 +23,21 @@ define(
                      id: event.candidate.sdpMid,
                      candidate: event.candidate.candidate
                    });
-               }              
+               }
             },
             createAnswer = function() {
                 pc.createAnswer(
                   function(answer) {
                       pc.setLocalDescription(answer, function() {
                           // send the answer to the remote connection
-                          sendMessage(answer);
+                          con.send(answer);
                       });
                   },
                   function(error) { console.log(error) },
                   {'mandatory': { 'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true } }
                 );
             },
+            streamReceived,
             errorHandler = function(e) { alert("something went wrong"); console.log(e); };
 
         return {
@@ -41,12 +45,12 @@ define(
               con.setHandler(function(message) {
                   if (pc) {
                       if (message.type === 'offer') {
-                         pc.setRemoteDescription(new SessionDescription(message));
+                         pc.setRemoteDescription(new sessionDescription(message));
                          createAnswer();
                       } else if (message.type === 'answer') {
-                         pc.setRemoteDescription(new SessionDescription(message));
+                         pc.setRemoteDescription(new sessionDescription(message));
                       } else if (message.type === 'candidate') {
-                         var candidate = new IceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
+                         var candidate = new iceCandidate({sdpMLineIndex: message.label, candidate: message.candidate});
                          pc.addIceCandidate(candidate);
                       }
                   }
@@ -90,6 +94,10 @@ define(
               } else {
                 throw new Error("PeerConnection is not defined");
               }
+            },
+            onStreamReceived : function(callback) {
+               createPc(null);
+               streamReceived = callback;
             }
         };
     }
