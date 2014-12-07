@@ -44,7 +44,9 @@ define(
                   //  var filteredValue = analizer.get();
                   //  vizAn.set(filteredValue);
                   //  alerter.put(filteredValue);
+                    compareCallback(percent);
                     ctx.putImageData(resImage,0,0);
+
                 }
                 prevImage = image;
               };
@@ -52,7 +54,12 @@ define(
           step = function() {
             processImage();
             requestAnimationFrame(step);
+          },
+          callback,
+          compareCallback = function(res) {
+              callback && callback(res);
           };
+
       return {
           init: function(stream, videoElem, config) {
              var defaultOptions = {},
@@ -63,6 +70,8 @@ define(
                   canvas = document.createElement("canvas");
                   document.body.appendChild(canvas);
               }
+
+              config.callback && (callback = config.callback);
               video = videoElem;
               canvas = document.querySelector('canvas');
               canvas.setAttribute("height", 480);

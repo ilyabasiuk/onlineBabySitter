@@ -6,7 +6,6 @@ define(
           handler;
 
       socket.on('message', function (message){
-          console.log(message);
           handler && handler(message);
       });
 
@@ -15,7 +14,6 @@ define(
           socket.emit('message', message);
         },
         setHandler : function(onMessage) {
-          console.log("set hander");
           handler = onMessage;
         }
       }
