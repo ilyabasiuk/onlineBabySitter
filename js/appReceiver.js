@@ -23,7 +23,7 @@ require(["webRtcHelper", "motionDetector", "alerter", "visualizer",
        webRtcHelper.init();
        webRtcHelper.onStreamReceived(function(stream){
           var alertElem = document.createElement("div"),
-              alerter = createAlerter(alertElem,1.5),       // if more than 1.5 % of screen changed will conseder that moving detected
+              alerter = createAlerter(alertElem, 1.5),       // if more than 1.5 % of screen changed will conseder that moving detected
               viser = createVisualizer(createVisualElem()),
               viserAn = createVisualizer(createVisualElem());
 
