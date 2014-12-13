@@ -19,7 +19,7 @@ define(
                     clearTimeout(timerId);
                   }
               }
-            },
+            }(),
             changeState = function(state) {
                 prevState = state;
                 if (state) {
